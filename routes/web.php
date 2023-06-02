@@ -1,18 +1,17 @@
 <?php
 
+use App\Helpers\Telegram;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Http;
+use app\Http\Controllers\TelegramViberBotController;
 
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider and all of them will
-| be assigned to the "web" middleware group. Make something great!
-|
-*/
+Route::post('/telegram/webhook', 'TelegramViberBotController@handleIncomingMessage');
 
-Route::get('/', function () {
-    return view('welcome');
+Route::post('/telegram/webhook', 'TelegramViberBotController@handleWebhook');
+
+Route::get('/', function (Telegram $telegram) {
+    $sendMessage = $telegram->sendMessage(436481135, 'test');
+    $sendMessage = json_decode($sendMessage);
+    $http = $telegram->sendDocument(436481135, 'Slider.png', $sendMessage->result->message_id);
+    dd($http->body());
 });
