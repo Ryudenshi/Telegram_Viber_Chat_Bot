@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('name');
             $table->string('email');
             $table->string('product');
-            $table->boolean('public');
+            $table->boolean('public')->default(false);;
             $table->string('secret_key');
         });
     }

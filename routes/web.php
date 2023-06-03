@@ -4,31 +4,18 @@ use App\Helpers\Telegram;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Http;
 use app\Http\Controllers\TelegramViberBotController;
+use App\Http\Controllers\WebhookController;
+use App\Models\Order;
 
-Route::get('/', function (Telegram $telegram) {
-    $buttons = [
-        'inline_keyboard' => [
-            [
-                [
-                    'text' => 'button4',
-                    'callback_data' => '1'
-                ],
-                [
-                    'text' => 'button2',
-                    'callback_data' => '2'
-                ],
-            ]
-        ]
-    ];
+$ngrokForwardingUrl = 'https://b2de-185-12-142-85.ngrok-free.app/Telegram_Viber_Chat_Bot/public/webhook';
 
-    $sendMessage = $telegram->editButtons(436481135, 'test2', json_encode($buttons), 29);
-    $sendMessage = json_decode($sendMessage);
-    dd($sendMessage);
+Route::get('/', function(Order $order) use ($ngrokForwardingUrl) {
+    //$http = Http::get('https://api.tlgr.org/bot6097503862:AAHdE6EKpMaXx_MDpo3-7Cz9P2PBLDc_XRs/getWebhookInfo?url=' . $ngrokForwardingUrl);
+    //dd(json_decode($http->body()));
+    return view('pages.order', ['orders' => $order->active()->get()]);
 });
 
-/*Route::get('/', function (Telegram $telegram) {
-    $sendMessage = $telegram->sendMessage(436481135, 'test');
-    $sendMessage = json_decode($sendMessage);
-    $http = $telegram->sendDocument(436481135, 'Slider.png', $sendMessage->result->message);
-    dd($http->body());
-});*/
+Route::group(['namespace' => 'App\Http\Controllers'], function(){
+    Route::post('/order/store', 'OrderController@Store')->name('order.store');
+    Route::post('/webhook', [WebhookController::class, 'index']);
+});
